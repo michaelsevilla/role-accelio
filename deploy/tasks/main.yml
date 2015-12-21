@@ -1,0 +1,23 @@
+# Author: Michael Sevilla
+# Create an Accelio node (with the source code)
+
+- name: pull dependencies for running accelio
+  ignore_errors: True
+  no_log: True
+  docker: 
+    image: michaelsevilla/tachyondev
+    state: present
+
+- name: start the accelio server in a tachyon container
+  docker:
+    image: michaelsevilla/tachyondev
+    name: "{{ container }}"
+    state: restarted
+    privileged: yes
+    detach: yes
+    tty: yes
+    net: host
+    volumes: 
+      - "{{ code_dir }}/tachyon:/tachyon"
+      - "{{ code_dir }}/accelio:/accelio"
+    command: /accelio/examples/usr/hello_world_mt1/xio_mt_server {{ inventory_hostname }} 8125 tcp 0
